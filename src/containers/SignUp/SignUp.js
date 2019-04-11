@@ -1,14 +1,21 @@
 import React from 'react'
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
+import { Switch, Route, Redirect } from 'react-router-dom'
+import styled from 'styled-components'
 import { FirstStep } from '..'
 
 const SignUp = () => (
-  <Router>
+  <Container>
     <Switch>
       <Route path="/" exact component={FirstStep} />
       <Redirect to="/" />
     </Switch>
-  </Router>
+  </Container>
 )
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 5px;
+`
 
 export default SignUp
