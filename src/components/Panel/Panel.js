@@ -8,7 +8,7 @@ const Panel = styled.div`
   border-radius: 10px;
   border: 1px solid ${COLORS.border};
   width: 290px;
-  height: 395px;
+  min-height: 395px;
 `
 
 export default Panel
