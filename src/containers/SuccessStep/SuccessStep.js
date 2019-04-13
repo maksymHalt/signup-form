@@ -10,7 +10,8 @@ import SucceededIcon from '../../assets/img/checked.svg'
 import Arrow from '../../assets/img/right-arrow.svg'
 import { COLORS } from '../../utils'
 
-const PREVIOUS_FIELDS = ['email', 'password', 'date_of_birth', 'gender', 'how_hear_about_us']
+const ALL_FIELDS = ['email', 'password', 'date_of_birth', 'gender', 'how_hear_about_us']
+const PREVIOUS_FIELDS = ['email', 'password', 'date_of_birth', 'gender']
 
 class SuccessStep extends Component {
   constructor (props) {
@@ -23,7 +24,7 @@ class SuccessStep extends Component {
   }
 
   onSubmit = (data) => {
-    console.log(pick(data, PREVIOUS_FIELDS))
+    console.log(pick(data, ALL_FIELDS))
   }
 
   render () {
