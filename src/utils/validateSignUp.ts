@@ -4,8 +4,19 @@ const currentYear = date.getFullYear()
 date.setFullYear(currentYear - 18)
 const _18YearsAgo = date.getTime()
 
-const validateSignUp = values => {
-  const errors = {}
+export type FormValues = {
+  email?: string,
+  password?: string,
+  confirmPassword?: string,
+  date_of_birth?: number,
+  gender?: string,
+  how_hear_about_us?: string,
+}
+
+type FormErrors = Omit<FormValues, 'date_of_birth'> & { date_of_birth?: string };
+
+const validateSignUp = (values: FormValues) => {
+  const errors: FormErrors = {}
   if (!values.email) {
     errors.email = 'Email is required'
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {

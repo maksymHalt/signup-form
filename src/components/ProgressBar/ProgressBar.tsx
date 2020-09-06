@@ -1,7 +1,9 @@
 import styled from 'styled-components'
 import { COLORS } from '../../utils'
 
-const ProgressBar = styled.div`
+type Props = { 'data-value': number };
+
+const ProgressBar = styled.div<Props>`
   display: flex;
   border: solid ${COLORS.border};
   border-width: 1px 0;

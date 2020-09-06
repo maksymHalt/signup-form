@@ -1,21 +1,24 @@
 import React from 'react'
 import styled from 'styled-components'
+import { WrappedFieldProps } from 'redux-form'
 import { COLORS } from '../../utils'
 
-const TextField = (props) => {
+type Props = WrappedFieldProps & { label: string, className: string, type: string  };
+
+const TextField = (props: Props) => {
   const { label, input, meta: { error, touched }, className, type = 'text' } = props
   return (
-    <Containter className={className}>
+    <Container className={className}>
       {touched && error
         ? <Error>{error}</Error>
         : <Label>{label}</Label>
       }
       <Input type={type} {...input} />
-    </Containter>
+    </Container>
   )
 }
 
-const Containter = styled.div`
+const Container = styled.div`
   width: 100%;
 `
 const Label = styled.div`

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { reduxForm, formValueSelector } from 'redux-form'
+import { connect, ConnectedProps } from 'react-redux'
+import { RouterProps } from 'react-router'
+import { reduxForm, formValueSelector, InjectedFormProps } from 'redux-form'
 import styled from 'styled-components'
 import pick from 'lodash.pick'
 import {
@@ -8,13 +9,24 @@ import {
 } from '../../components'
 import SucceededIcon from '../../assets/img/checked.svg'
 import Arrow from '../../assets/img/right-arrow.svg'
-import { COLORS } from '../../utils'
+import { RootState } from '../../redux/store'
+import { COLORS, FormValues } from '../../utils'
 
 const ALL_FIELDS = ['email', 'password', 'date_of_birth', 'gender', 'how_hear_about_us']
 const PREVIOUS_FIELDS = ['email', 'password', 'date_of_birth', 'gender']
 
-class SuccessStep extends Component {
-  constructor (props) {
+const mapState = (state: RootState) => ({
+  previousValues: selector(state, ...PREVIOUS_FIELDS)
+})
+
+const connector = connect(mapState)
+
+type BaseProps = RouterProps & ConnectedProps<typeof connector>
+
+type Props = BaseProps & InjectedFormProps<FormValues, BaseProps>
+
+class SuccessStep extends Component<Props> {
+  constructor (props: Props) {
     super(props)
 
     const { previousValues, history } = props
@@ -23,7 +35,7 @@ class SuccessStep extends Component {
     }
   }
 
-  onSubmit = (data) => {
+  onSubmit = (data: FormValues) => {
     console.log(pick(data, ALL_FIELDS))
   }
 
@@ -67,9 +79,7 @@ const Form = styled(DefaultForm)`
 
 const selector = formValueSelector('signUp')
 
-export default connect(state => ({
-  previousValues: selector(state, ...PREVIOUS_FIELDS)
-}))(reduxForm({
+export default connector(reduxForm<FormValues, BaseProps>({
   form: 'signUp',
   destroyOnUnmount: false,
   forceUnregisterOnUnmount: true

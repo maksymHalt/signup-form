@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
+import { WrappedFieldProps } from 'redux-form'
 import styled from 'styled-components'
 import { COLORS } from '../../utils'
 
-class Switcher extends Component {
-  constructor (props) {
+type Props = WrappedFieldProps & { label: string; className: string; options: string[] };
+
+class Switcher extends Component<Props> {
+  constructor (props: Props) {
     super(props)
 
     if (!props.input.value) {
@@ -14,7 +17,7 @@ class Switcher extends Component {
   render () {
     const { label, input, meta: { error, touched }, className, options } = this.props
     return (
-      <Containter className={className}>
+      <Container className={className}>
         {touched && error
           ? <Error>{error}</Error>
           : <Label>{label}</Label>
@@ -32,12 +35,12 @@ class Switcher extends Component {
             </RadioButton>
           ))}
         </InputContainer>
-      </Containter>
+      </Container>
     )
   }
 }
 
-const Containter = styled.div`
+const Container = styled.div`
   width: 100%;
 `
 const Label = styled.div`
@@ -57,7 +60,8 @@ const RadioInput = styled.input`
   top: -9999px;
   left: -9999px;
 `
-const RadioButton = styled.label`
+type RadioButtonType = { checked: boolean };
+const RadioButton = styled.label<RadioButtonType>`
   border: 1px solid ${COLORS.border};
   flex-grow: 1;
   flex-shrink: 0;

@@ -1,14 +1,19 @@
 import React, { Component } from 'react'
-import { Field as DefaultField, reduxForm } from 'redux-form'
+import { RouterProps } from 'react-router'
+import { Field as DefaultField, reduxForm, InjectedFormProps } from 'redux-form'
 import styled from 'styled-components'
 import {
   Panel, Header, Footer, ProgressBar, Form, TextField, Button
 } from '../../components'
 import Arrow from '../../assets/img/right-arrow.svg'
-import { COLORS, validateSignUp } from '../../utils'
+import { COLORS, validateSignUp, FormValues } from '../../utils'
 
-class BaseInfoStep extends Component {
-  onSubmit = (data) => {
+interface BaseProps extends RouterProps {};
+
+type Props = BaseProps & InjectedFormProps<FormValues, BaseProps>
+
+class BaseInfoStep extends Component<Props> {
+  onSubmit = (data: FormValues) => {
     const { history } = this.props
     history.push('/additional-info')
   }
@@ -35,11 +40,17 @@ class BaseInfoStep extends Component {
   }
 }
 
+interface FieldType extends DefaultField {
+  label: string;
+  type: string;
+}
+
 const Field = styled(DefaultField)`
   &:nth-last-child(n+2) {
     margin-bottom: 20px;
   }
-`
+` as unknown as typeof DefaultField
+
 const Icon = styled.img`
   width: 12px;
   height: 12px;
@@ -50,7 +61,7 @@ const NextButton = styled(Button)`
   margin-left: auto;
 `
 
-export default reduxForm({
+export default reduxForm<FormValues, BaseProps>({
   form: 'signUp',
   destroyOnUnmount: false,
   forceUnregisterOnUnmount: true,

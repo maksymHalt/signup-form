@@ -1,10 +1,20 @@
 import React, { Component } from 'react'
+import { WrappedFieldProps } from 'redux-form'
 import styled from 'styled-components'
-import ReactSelect from 'react-select'
+import ReactSelect, { OptionsType, StylesConfig } from 'react-select'
 import { COLORS } from '../../utils'
 
-class SelectField extends Component {
-  constructor (props) {
+type OptionType = { value: string }
+
+type Props = WrappedFieldProps & {
+  label: string,
+  className: string,
+  options: OptionsType<OptionType>,
+  placeholder: string,
+}
+
+class SelectField extends Component<Props> {
+  constructor (props: Props) {
     super(props)
 
     if (!props.input.value) {
@@ -15,7 +25,7 @@ class SelectField extends Component {
   render () {
     const { label, input, meta: { error, touched }, className, options, placeholder = '' } = this.props
     return (
-      <Containter className={className}>
+      <Container className={className}>
         {touched && error
           ? <Error>{error}</Error>
           : <Label>{label}</Label>
@@ -23,19 +33,19 @@ class SelectField extends Component {
         <ReactSelect
           {...input}
           value={options.find(option => option.value === input.value)}
-          onChange={(option) => input.onChange(option && option.value)}
+          onChange={(option) => input.onChange((option as OptionType)?.value)}
           onBlur={() => input.onBlur(input.value || null)}
           styles={SelectStyles}
           options={options}
           placeholder={placeholder}
           isClearable={true}
         />
-      </Containter>
+      </Container>
     )
   }
 }
 
-const Containter = styled.div`
+const Container = styled.div`
   width: 100%;
 `
 const Label = styled.div`
@@ -46,7 +56,7 @@ const Label = styled.div`
 const Error = styled(Label)`
   color: ${COLORS.danger};
 `
-const SelectStyles = {
+const SelectStyles: StylesConfig = {
   control: (provided) => ({ ...provided, borderColor: COLORS.border }),
   indicatorSeparator: () => ({ display: 'none' }),
   dropdownIndicator: (provided) => ({ ...provided, color: COLORS.accent })

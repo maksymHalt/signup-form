@@ -1,26 +1,48 @@
-import React, { Component } from 'react'
+import React, { Component, ChangeEvent, createRef } from 'react'
 import styled from 'styled-components'
 import Cleave from 'cleave.js/react'
+import { WrappedFieldProps } from 'redux-form'
 import { COLORS } from '../../utils'
 
-const validateFields = ({ day, month, year }) => (
+type DateData = {
+  day: string,
+  month: string,
+  year: string
+}
+
+const validateFields = ({ day, month, year }: DateData) => (
   day && day.length === 2 &&
   month && month.length === 2 &&
   year && year.length === 4
 )
 
-class DateField extends Component {
-  constructor (props) {
-    super(props)
+type Props = WrappedFieldProps & { className: string, label: string }
 
-    this.fields = {}
+type State = DateData & { error: string }
+
+class DateField extends Component<Props, State> {
+  private fields = {
+    day: createRef<any>(),
+    month: createRef<any>(),
+    year: createRef<any>()
+  }
+  private nativeFields: {
+    day?: HTMLInputElement,
+    month?: HTMLInputElement,
+    year?: HTMLInputElement
+  } = {}
+  private nativeFieldList: object[] = []
+
+
+  constructor (props: Props) {
+    super(props)
 
     if (props.input.value) {
       const date = new Date(props.input.value)
       this.state = {
-        day: date.getDate(),
-        month: date.getMonth() + 1,
-        year: date.getFullYear(),
+        day: `${date.getDate()}`,
+        month: `${date.getMonth() + 1}`,
+        year: `${date.getFullYear()}`,
         error: ''
       }
     } else {
@@ -35,28 +57,28 @@ class DateField extends Component {
 
   componentDidMount () {
     this.nativeFields = Object.entries(this.fields)
-      .reduce((fields, [name, { element }]) => ({ ...fields, [name]: element }), {})
-    this.nativeFieldList = Object.values(this.fields).map(({ element }) => element)
+      .reduce((fields, [name, { current: { element } }]) => ({ ...fields, [name]: element }), {})
+    this.nativeFieldList = Object.values(this.fields).map(({ current: { element } }) => element)
   }
 
-  onFieldChange = ({ target: { name, value } }) => {
-    const { [name]: oldValue } = this.state
-    this.setState({ [name]: value }, () => {
+  onFieldChange = ({ target: { name, value } }: ChangeEvent<HTMLInputElement>) => {
+    const { [name as keyof DateData]: oldValue } = this.state
+    this.setState({ [name]: value } as State, () => {
       // moving between fields
       const isAddChars = oldValue < value
       if (isAddChars) {
         if (name === 'day' && value.length === 2) {
-          this.nativeFields.month.focus()
+          this.nativeFields.month?.focus()
         }
         if (name === 'month' && value.length === 2) {
-          this.nativeFields.year.focus()
+          this.nativeFields.year?.focus()
         }
       } else {
         if (name === 'year' && value.length === 0) {
-          this.nativeFields.month.focus()
+          this.nativeFields.month?.focus()
         }
         if (name === 'month' && value.length === 0) {
-          this.nativeFields.day.focus()
+          this.nativeFields.day?.focus()
         }
       }
 
@@ -71,7 +93,7 @@ class DateField extends Component {
         return
       }
       this.setState({ error: '' })
-      const date = new Date(year, month - 1, day)
+      const date = new Date(+year, +month - 1, +day)
       this.props.input.onChange(date.getTime())
     })
   }
@@ -83,12 +105,12 @@ class DateField extends Component {
       type: 'text',
       onChange: this.onFieldChange,
       onFocus: input.onFocus,
-      onBlur: ({ relatedTarget }) =>
-        !this.nativeFieldList.includes(relatedTarget) && input.onBlur()
+      onBlur: ({ relatedTarget }: React.FocusEvent) =>
+        !this.nativeFieldList.includes(relatedTarget || {}) && input.onBlur(undefined)
     }
     const errorText = touched && (internalError || error)
     return (
-      <Containter className={className}>
+      <Container className={className}>
         {errorText
           ? <Error>{errorText}</Error>
           : <Label>{label}</Label>
@@ -100,7 +122,7 @@ class DateField extends Component {
             value={day}
             placeholder="DD"
             options={{ date: true, datePattern: ['d'] }}
-            ref={el => { this.fields.day = el }}
+            ref={this.fields.day}
           />
           <Input
             {...inputProps}
@@ -108,7 +130,7 @@ class DateField extends Component {
             value={month}
             placeholder="MM"
             options={{ date: true, datePattern: ['m'] }}
-            ref={el => { this.fields.month = el }}
+            ref={this.fields.month}
           />
           <Input
             {...inputProps}
@@ -116,15 +138,15 @@ class DateField extends Component {
             value={year}
             placeholder="YYYY"
             options={{ date: true, datePattern: ['Y'] }}
-            ref={el => { this.fields.year = el }}
+            ref={this.fields.year}
           />
         </InputContainer>
-      </Containter>
+      </Container>
     )
   }
 }
 
-const Containter = styled.div`
+const Container = styled.div`
   width: 100%;
 `
 const Label = styled.div`
@@ -160,6 +182,6 @@ const Input = styled(Cleave)`
   &:nth-child(n+2) {
     border-left: 0;
   }
-`
+` as unknown as typeof Cleave
 
 export default DateField

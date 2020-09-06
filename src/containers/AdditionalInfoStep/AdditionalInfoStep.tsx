@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { Field as DefaultField, reduxForm, formValueSelector } from 'redux-form'
+import { connect, ConnectedProps } from 'react-redux'
+import { RouterProps } from 'react-router'
+import { Field as DefaultField, reduxForm, formValueSelector, InjectedFormProps } from 'redux-form'
 import styled from 'styled-components'
 import {
   Panel, Header, Footer, ProgressBar, Form, DateField, Switcher, SelectField, Button
 } from '../../components'
 import Arrow from '../../assets/img/right-arrow.svg'
-import { COLORS, validateSignUp } from '../../utils'
+import { COLORS, validateSignUp, FormValues } from '../../utils'
+import { RootState } from '../../redux/store'
 
 const HOW_HEAR_ABOUT_US_OPTIONS = [
   'From email',
@@ -15,7 +17,7 @@ const HOW_HEAR_ABOUT_US_OPTIONS = [
   'Google Search',
   'Other internet search',
   'Social sites',
-  'Messangers',
+  'Messengers',
   'Poster',
   'Event',
   'Local newspaper advert',
@@ -24,8 +26,18 @@ const HOW_HEAR_ABOUT_US_OPTIONS = [
 
 const PREVIOUS_FIELDS = ['email', 'password']
 
-class AdditionalInfoStep extends Component {
-  constructor (props) {
+const mapState = (state: RootState) => ({
+  previousValues: selector(state, ...PREVIOUS_FIELDS)
+});
+
+const connector = connect(mapState)
+
+type BaseProps = RouterProps & ConnectedProps<typeof connector>
+
+type Props = BaseProps & InjectedFormProps<FormValues, BaseProps>
+
+class AdditionalInfoStep extends Component<Props> {
+  constructor (props: Props) {
     super(props)
 
     const { previousValues, history } = props
@@ -78,7 +90,8 @@ const Field = styled(DefaultField)`
   &:nth-last-child(n+2) {
     margin-bottom: 20px;
   }
-`
+` as unknown as typeof DefaultField
+
 const Icon = styled.img`
   width: 12px;
   height: 12px;
@@ -93,9 +106,7 @@ const NextButton = styled(Button)`
 
 const selector = formValueSelector('signUp')
 
-export default connect(state => ({
-  previousValues: selector(state, ...PREVIOUS_FIELDS)
-}))(reduxForm({
+export default connector(reduxForm<FormValues, BaseProps>({
   form: 'signUp',
   destroyOnUnmount: false,
   forceUnregisterOnUnmount: true,
