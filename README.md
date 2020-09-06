@@ -16,7 +16,7 @@ There is signup module which consists of 3 steps.
 
 ## Third step
 
-Congratulations about finishing filling form and button for redirect to Dashboard
+Congratulations about finishing filling form and button for redirect to Dashboard, which actually logs form data in the console
 
 ![Sign Up Form](https://github.com/maksymHalt/signup-form/blob/master/readme/signup-form.jpg?raw=true)
 
